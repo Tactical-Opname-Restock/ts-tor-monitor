@@ -1,8 +1,8 @@
-import { Link, createFileRoute, useRouter } from '@tanstack/react-router'
-import Cookies from 'js-cookie'
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { useLogin } from 'hooks/hooks'
+import { useEffect } from 'react'
 import type { TAuthSchema } from '@/lib/validations/auth.schema'
 import { authSchema } from '@/lib/validations/auth.schema'
 import { Button } from '@/components/ui/button'
@@ -15,36 +15,50 @@ import {
 } from '@/components/ui/card'
 
 import { Form } from '@/components/ui/form'
-import { AuthForm } from '@/components/ui/shared/auth-form'
+// import { AuthForm } from '@/components/ui/shared/auth-form'
 import { AuthHeader } from '@/components/ui/shared/auth-header'
+import { useLoginMutation } from '@/hooks/mutation/use-login-mutation/use-login-mutation'
+import { useAuth } from '@/context/use-auth'
+import { InputText } from '@/components/ui/shared/input-text'
 
 export const Route = createFileRoute('/(auth)/login')({ component: LoginPage })
 
 function LoginPage() {
-  const signInUserForm = useForm<TAuthSchema>({
+  const form = useForm<TAuthSchema>({
     resolver: zodResolver(authSchema),
+    mode: 'all',
     defaultValues: {
       email: '',
       password: '',
     },
   })
-  const router = useRouter()
-  const { mutateAsync } = useLogin()
+  const { access_token } = useAuth()
+  const navigate = useNavigate()
+  const loginMutate = useLoginMutation()
 
-  const handleSubmit = async (values: TAuthSchema) => {
-    try {
-      console.log('Submitting login form with values:', values)
-      const response = await mutateAsync(values)
-      const token = response.access_token
-      console.log('Received token:', token)
-      Cookies.set('access_token', token, { expires: 1 })
-    } catch (err) {
-      throw new Error('Terjadi kesalahan saat login. Silakan coba lagi.')
-    } finally {
-      router.navigate({ to: '/dashboard' })
-    }
+  const onSubmit = async (data: TAuthSchema) => {
+    loginMutate.mutate(data, {
+      onSuccess: () => {
+        toast.success('Login Berhasil', {
+          position: 'top-right',
+          richColors: true,
+          description: 'Selamat datang di dashboard',
+        })
+      },
+      onError: () => {
+        toast.error('Login Gagal', {
+          position: 'top-right',
+          richColors: true,
+          description: 'Username atau password salah',
+        })
+      },
+    })
   }
-
+  useEffect(() => {
+    if (access_token) {
+      navigate({ to: '/dashboard' })
+    }
+  }, [access_token])
   return (
     <>
       <AuthHeader />
@@ -59,12 +73,42 @@ function LoginPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Form {...signInUserForm}>
-              <AuthForm onSubmit={handleSubmit} />
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} id="authform">
+                <div className="flex flex-col gap-6 mb-2">
+                  <div className="grid gap-2">
+                    <InputText
+                      name="email"
+                      type="email"
+                      label="email"
+                      placeholder="email"
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <InputText
+                      name="password"
+                      type="password"
+                      label="Password"
+                      placeholder="********"
+                      required
+                    />
+                  </div>
+                </div>
+                <Button
+                  type="submit"
+                  // id="authform"
+                  // onClick={form.handleSubmit(onSubmit)}
+                  className="w-full"
+                  isLoading={loginMutate.isPending}
+                >
+                  Login
+                </Button>
+              </form>
             </Form>
           </CardContent>
           <CardFooter className="flex flex-col gap-2">
-            <Button
+            {/* <Button
               type="submit"
               form="authform"
               className="w-full"
@@ -73,7 +117,7 @@ function LoginPage() {
               {signInUserForm.formState.isSubmitting
                 ? 'Logging in...'
                 : 'Login'}
-            </Button>
+            </Button> */}
 
             <div className="text-center mt-6">
               <p>
