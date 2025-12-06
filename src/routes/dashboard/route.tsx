@@ -12,15 +12,15 @@ import { AppSidebar } from '@/components/ui/app-sidebar'
 import { useAuth } from '@/context/use-auth'
 
 export const Route = createFileRoute('/dashboard')({
-  beforeLoad: async ({ location }) => {
-    const cookie = await cookiesStorage.getItem('auth')
-    if (!cookie) {
-      throw redirect({
-        to: '/login',
-        search: location.href,
-      })
-    }
-  },
+  // beforeLoad: async ({ location }) => {
+  //   const cookie = await cookiesStorage.getItem('auth')
+  //   if (!cookie) {
+  //     throw redirect({
+  //       to: '/login',
+  //       search: location.href,
+  //     })
+  //   }
+  // },
 
   component: DashboardLayout,
 })
