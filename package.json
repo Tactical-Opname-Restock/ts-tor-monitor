@@ -12,6 +12,15 @@
     "check": "prettier --write . && eslint --fix",
     "prepare": "husky"
   },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,mdx,css,yaml,yml}": [
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "@fontsource/fira-mono": "^5.2.7",
     "@hookform/resolvers": "^5.2.2",
