@@ -1,6 +1,8 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
+import { toast } from 'sonner'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
+import { useEffect } from 'react'
 import type { TAuthSchema } from '@/lib/validations/auth.schema'
 import { authSchema } from '@/lib/validations/auth.schema'
 import { Button } from '@/components/ui/button'
@@ -13,67 +15,105 @@ import {
 } from '@/components/ui/card'
 
 import { Form } from '@/components/ui/form'
-import { AuthForm } from '@/components/ui/shared/auth-form'
+// import { AuthForm } from '@/components/ui/shared/auth-form'
 import { AuthHeader } from '@/components/ui/shared/auth-header'
+import { InputText } from '@/components/ui/shared/input-text'
+import { useRegisterMutation } from '@/hooks/mutation/use-register-mutation/use-register-mutation'
 
 export const Route = createFileRoute('/(auth)/register')({
   component: RegisterPage,
 })
 
 function RegisterPage() {
-  const signUpUserForm = useForm<TAuthSchema>({
+  const form = useForm<TAuthSchema>({
     resolver: zodResolver(authSchema),
+    mode: 'all',
     defaultValues: {
       email: '',
       password: '',
     },
   })
-  //   const router = useRouter()
-  // const { mutate } = useRegister()
+  const registerMutate = useRegisterMutation()
 
-  const handleSubmit = (values: TAuthSchema) => {
-    console.log(values)
-    // try {
-    //   mutate(values, {
-    //     onSuccess: () => {
-    //       alert('Registrasi berhasil! Silakan login dengan akun Anda.')
-    //       signUpUserForm.reset()
-    //     },
-    //   })
-    // } catch (err) {
-    //   throw new Error('Terjadi kesalahan saat login. Silakan coba lagi.')
-    // }
+  const onSubmit = async (data: TAuthSchema) => {
+    registerMutate.mutate(data, {
+      onSuccess: () => {
+        toast.success('Daftar Berhasil', {
+          position: 'top-right',
+          richColors: true,
+          description: 'Harap Verifikasi Email Anda',
+        })
+        form.reset()
+      },
+      onError: () => {
+        toast.error('Login Gagal', {
+          position: 'top-right',
+          richColors: true,
+          description: 'Username atau password salah',
+        })
+      },
+    })
   }
 
   return (
     <>
       <AuthHeader />
-      <main className="flex min-h-screen gap-3 flex-col items-center justify-center bg-background">
-        <Card className="bg-[#FFFAF0] max-w-screen">
+      <main className="flex min-h-screen gap-3 flex-col items-center justify-center bg-background ">
+        <Card className="bg-[#FFFAF0] max-w-screen ">
           <CardHeader>
             <CardTitle>
-              <h1 className="text-2xl font-normal ">Daftar</h1>{' '}
+              <h1 className="text-2xl font-normal ">Masuk</h1>{' '}
               <p className="text-sm text-muted-foreground font-medium">
                 Masukkan kredensial Anda
               </p>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Form {...signUpUserForm}>
-              <AuthForm onSubmit={handleSubmit} />
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} id="authform">
+                <div className="flex flex-col gap-6 mb-2">
+                  <div className="grid gap-2">
+                    <InputText
+                      name="email"
+                      type="email"
+                      label="email"
+                      placeholder="email"
+                      required
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <InputText
+                      name="password"
+                      type="password"
+                      label="Password"
+                      placeholder="********"
+                      required
+                    />
+                  </div>
+                </div>
+                <Button
+                  type="submit"
+                  // id="authform"
+                  // onClick={form.handleSubmit(onSubmit)}
+                  className="w-full"
+                  isLoading={registerMutate.isPending}
+                >
+                  Daftar
+                </Button>
+              </form>
             </Form>
           </CardContent>
           <CardFooter className="flex flex-col gap-2">
-            <Button
+            {/* <Button
               type="submit"
               form="authform"
               className="w-full"
-              disabled={signUpUserForm.formState.isSubmitting}
+              disabled={signInUserForm.formState.isSubmitting}
             >
-              {signUpUserForm.formState.isSubmitting
+              {signInUserForm.formState.isSubmitting
                 ? 'Logging in...'
-                : 'Daftar'}
-            </Button>
+                : 'Login'}
+            </Button> */}
 
             <div className="text-center mt-6">
               <p>
