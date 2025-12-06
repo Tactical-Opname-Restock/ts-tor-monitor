@@ -1,0 +1,8 @@
+
+echo "🔍 Running lint-staged..."
+bunx lint-staged
+
+echo "📦 Type checking..."
+bun run type-check
+
+echo "✅ Pre-commit passed!"
