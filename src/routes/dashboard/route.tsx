@@ -34,10 +34,10 @@ function DashboardLayout() {
     }
   }, [access_token])
   return (
-    <div className="dashboard w-screen">
+    <div className="dashboard w-screen h-screen flex overflow-hidden">
       <SidebarProvider>
         <AppSidebar />
-        <main className="dashboard-main">
+        <main className="dashboard-main flex-1 h-full overflow-auto">
           <Outlet />
         </main>
       </SidebarProvider>

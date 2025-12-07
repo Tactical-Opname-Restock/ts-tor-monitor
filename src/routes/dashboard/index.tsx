@@ -11,7 +11,7 @@ import {
 import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { useDashboardQuery } from '@/hooks/query/use-dashboard-query'
 import { Card } from '@/components/ui/card'
-// import ChartAreaStacked from '@/components/ui/chart-custom'
+import ChartAreaStacked from '@/components/ui/chart-custom'
 
 export const Route = createFileRoute('/dashboard/')({
   component: DashboardHome,
@@ -24,7 +24,7 @@ function DashboardHome() {
   return (
     <SidebarInset className="w-full h-screen flex flex-col bg-background">
       {/* HEADER */}
-      <header className="h-14 border-b bg-background flex items-center px-4 flex-shrink-0">
+      <header className="h-14  bg-background flex items-center px-4 shrink-0">
         <SidebarTrigger />
         <Breadcrumb className="ml-3">
           <BreadcrumbList>
@@ -43,7 +43,7 @@ function DashboardHome() {
       <main className="flex-1 w-full overflow-hidden p-6">
         <div className="flex w-full h-full gap-6">
           {/* LEFT SIDE */}
-          <div className="w-1/2 flex flex-col gap-4 h-full">
+          <div className="w-1/2 h-full flex flex-col gap-4">
             {/* GREETING */}
             <div>
               <h1 className="text-3xl font-semibold">Pagi Jokowi</h1>
@@ -53,19 +53,18 @@ function DashboardHome() {
             </div>
 
             {/* LIST / EMPTY DIV */}
-            <div className="flex-1 bg-[#FFFAF0] border-4 border-black shadow-[6px_6px_0_0_#000] overflow-auto" />
+            <div className="flex-1 bg-[#FFFAF0] border-4 border-black shadow-[6px_6px_0_0_#000]" />
           </div>
 
           {/* RIGHT SIDE */}
-          <div className="w-1/2 flex flex-col gap-4 h-full">
+          <div className="w-1/2 h-full flex flex-col gap-4">
             {/* CHART */}
-            {/* <div className="flex-1 bg-background rounded-lg overflow-hidden"> */}
-            <div className="flex-1 bg-[#FFFAF0] border-4 border-black shadow-[6px_6px_0_0_#000] overflow-auto" />
-            {/* <ChartAreaStacked /> */}
-            {/* </div> */}
+            <div className="flex-1 bg-background rounded-lg ">
+              <ChartAreaStacked />
+            </div>
 
             {/* STATS WIDGET */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4">
               <Widget title="Users" value={data?.stats?.users} />
               <Widget title="Posts" value={data?.stats?.posts} />
             </div>
