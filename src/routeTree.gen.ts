@@ -9,18 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TestRouteImport } from './routes/test'
 import { Route as DashboardRouteRouteImport } from './routes/dashboard/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as authRegisterRouteImport } from './routes/(auth)/register'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
+import { Route as DashboardGoodsIndexRouteImport } from './routes/dashboard/goods/index'
+import { Route as DashboardGoodsIdRouteImport } from './routes/dashboard/goods/$id'
 
-const TestRoute = TestRouteImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const DashboardRouteRoute = DashboardRouteRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -46,69 +42,82 @@ const authLoginRoute = authLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardGoodsIndexRoute = DashboardGoodsIndexRouteImport.update({
+  id: '/goods/',
+  path: '/goods/',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
+const DashboardGoodsIdRoute = DashboardGoodsIdRouteImport.update({
+  id: '/goods/$id',
+  path: '/goods/$id',
+  getParentRoute: () => DashboardRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
-  '/test': typeof TestRoute
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/goods/$id': typeof DashboardGoodsIdRoute
+  '/dashboard/goods': typeof DashboardGoodsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/test': typeof TestRoute
   '/login': typeof authLoginRoute
   '/register': typeof authRegisterRoute
   '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/goods/$id': typeof DashboardGoodsIdRoute
+  '/dashboard/goods': typeof DashboardGoodsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRouteRouteWithChildren
-  '/test': typeof TestRoute
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/register': typeof authRegisterRoute
   '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/goods/$id': typeof DashboardGoodsIdRoute
+  '/dashboard/goods/': typeof DashboardGoodsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/dashboard'
-    | '/test'
     | '/login'
     | '/register'
     | '/dashboard/'
+    | '/dashboard/goods/$id'
+    | '/dashboard/goods'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/test' | '/login' | '/register' | '/dashboard'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/dashboard'
+    | '/dashboard/goods/$id'
+    | '/dashboard/goods'
   id:
     | '__root__'
     | '/'
     | '/dashboard'
-    | '/test'
     | '/(auth)/login'
     | '/(auth)/register'
     | '/dashboard/'
+    | '/dashboard/goods/$id'
+    | '/dashboard/goods/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRouteRoute: typeof DashboardRouteRouteWithChildren
-  TestRoute: typeof TestRoute
   authLoginRoute: typeof authLoginRoute
   authRegisterRoute: typeof authRegisterRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/dashboard': {
       id: '/dashboard'
       path: '/dashboard'
@@ -144,15 +153,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/goods/': {
+      id: '/dashboard/goods/'
+      path: '/goods'
+      fullPath: '/dashboard/goods'
+      preLoaderRoute: typeof DashboardGoodsIndexRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
+    '/dashboard/goods/$id': {
+      id: '/dashboard/goods/$id'
+      path: '/goods/$id'
+      fullPath: '/dashboard/goods/$id'
+      preLoaderRoute: typeof DashboardGoodsIdRouteImport
+      parentRoute: typeof DashboardRouteRoute
+    }
   }
 }
 
 interface DashboardRouteRouteChildren {
   DashboardIndexRoute: typeof DashboardIndexRoute
+  DashboardGoodsIdRoute: typeof DashboardGoodsIdRoute
+  DashboardGoodsIndexRoute: typeof DashboardGoodsIndexRoute
 }
 
 const DashboardRouteRouteChildren: DashboardRouteRouteChildren = {
   DashboardIndexRoute: DashboardIndexRoute,
+  DashboardGoodsIdRoute: DashboardGoodsIdRoute,
+  DashboardGoodsIndexRoute: DashboardGoodsIndexRoute,
 }
 
 const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
@@ -162,7 +189,6 @@ const DashboardRouteRouteWithChildren = DashboardRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRouteRoute: DashboardRouteRouteWithChildren,
-  TestRoute: TestRoute,
   authLoginRoute: authLoginRoute,
   authRegisterRoute: authRegisterRoute,
 }

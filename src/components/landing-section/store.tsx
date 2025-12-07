@@ -4,38 +4,38 @@ import type { TFeature, TWorkStep } from './type'
 export const FEATURE: Array<TFeature> = [
   {
     icon: <Monitor />,
-    title: 'Lorem',
-    desc: ' Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta, illo optio! Placeat dolor facilis recusandae?',
+    title: 'Stock Monitoring',
+    desc: 'Pantau ketersediaan stok secara real-time untuk mencegah kekurangan barang di gudang.',
   },
   {
     icon: <Users />,
-    title: 'Lorem',
-    desc: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta, illo optio! Placeat dolor facilis recusandae?',
+    title: 'Team Coordination',
+    desc: 'Koordinasi tim lapangan dan gudang agar proses opname dan restock berjalan lancar.',
   },
   {
     icon: <Zap />,
-    title: 'Lorem',
-    desc: ' Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta, illo optio! Placeat dolor facilis recusandae?',
+    title: 'Instant Alerts',
+    desc: 'Dapatkan notifikasi cepat saat stok menipis atau terjadi selisih opname.',
   },
 ]
 
 export const STEPS: Array<TWorkStep> = [
   {
     id: 1,
-    title: 'Lorem Ipsum',
+    title: 'Prepare Stock Data',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta, illo optio! Placeat dolor facilis recusandae?',
+      'Siapkan data stok terkini dari semua gudang dan titik penjualan sebelum opname dimulai.',
   },
   {
     id: 2,
-    title: 'Lorem Ipsum',
+    title: 'Conduct Opname',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta, illo optio! Placeat dolor facilis recusandae?',
+      'Tim melakukan pengecekan fisik terhadap stok untuk memastikan kesesuaian dengan data sistem.',
   },
   {
     id: 3,
-    title: 'Lorem Ipsum',
+    title: 'Restock & Update',
     description:
-      'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Soluta, illo optio! Placeat dolor facilis recusandae?',
+      'Lakukan restock barang yang menipis dan update sistem agar stok tercatat akurat.',
   },
 ]

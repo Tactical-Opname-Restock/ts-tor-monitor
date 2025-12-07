@@ -1,6 +1,5 @@
 import { Slot } from '@radix-ui/react-slot'
 import { cva } from 'class-variance-authority'
-
 import * as React from 'react'
 import type { VariantProps } from 'class-variance-authority'
 
@@ -35,8 +34,8 @@ const buttonVariants = cva(
 
 function Button({
   className,
-  isLoading = false,
   variant,
+  isLoading,
   size,
   asChild = false,
   ...props
@@ -50,11 +49,7 @@ function Button({
   return (
     <Comp
       data-slot="button"
-      className={cn(buttonVariants({ variant, size, className }), {
-        'transition-all duration-500 disabled:pointer-events-auto disabled:animate-pulse disabled:cursor-wait disabled:opacity-65':
-          isLoading,
-      })}
-      disabled={isLoading || props.disabled}
+      className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     />
   )

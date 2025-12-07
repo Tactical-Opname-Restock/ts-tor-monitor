@@ -9,10 +9,7 @@ export const useLoginMutation = () => {
     mutationKey: ['login'],
     mutationFn: async (payload: TAuthSchema) => await login(payload),
     onSuccess: (data) => {
-      console.log(`ini data`, data.data)
-
       const isToken = data.data.access_token
-      console.log('SET TOKEN →', isToken, typeof isToken)
 
       signIn(isToken)
     },
