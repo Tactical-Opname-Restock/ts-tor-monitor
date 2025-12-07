@@ -1,14 +1,12 @@
 'use client'
 
-import { TrendingUp } from 'lucide-react'
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts'
-
+import { formatDateShort, formatRupiah } from 'utils/helper'
 import type { ChartConfig } from '@/components/ui/chart'
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
@@ -18,94 +16,70 @@ import {
   ChartTooltipContent,
 } from '@/components/ui/chart'
 
-export const description = 'A stacked area chart'
+export interface ChartAreaStackedProps<T extends Record<string, any>> {
+  data: Array<T>
+  config: ChartConfig
+  title?: string
+  description?: string
+  height?: string | number
+  stackId?: string
+  xDataKey?: keyof T
+}
 
-const chartData = [
-  { month: 'January', desktop: 186, mobile: 80 },
-  { month: 'February', desktop: 305, mobile: 200 },
-  { month: 'March', desktop: 237, mobile: 120 },
-  { month: 'April', desktop: 73, mobile: 190 },
-  { month: 'May', desktop: 209, mobile: 130 },
-  { month: 'June', desktop: 214, mobile: 140 },
-]
-
-const chartConfig = {
-  desktop: {
-    label: 'Desktop',
-    color: 'var(--chart-1)',
-  },
-  mobile: {
-    label: 'Mobile',
-    color: 'var(--chart-2)',
-  },
-} satisfies ChartConfig
-
-export default function ChartAreaStacked() {
+export function DashboardChart<T extends Record<string, any>>({
+  data,
+  config,
+  title = 'Grafik Penjualan',
+  description = '',
+  stackId = 'a',
+  xDataKey,
+}: ChartAreaStackedProps<T>) {
   return (
-    <Card className="bg-white-primary text-foreground">
+    <Card className="bg-white-primary text-foreground  flex flex-col justify-center">
       <CardHeader>
-        <CardTitle>Area Chart - Stacked</CardTitle>
-        <CardDescription>
-          Showing total visitors for the last 6 months
-        </CardDescription>
+        <CardTitle className="text-2xl">{title}</CardTitle>
+        {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={config} className="h-full">
           <AreaChart
-            accessibilityLayer
-            data={chartData}
-            margin={{
-              left: 12,
-              right: 12,
-            }}
+            data={data}
+            margin={{ left: 1, right: 1 }}
+            // style={{ height }}
           >
             <CartesianGrid vertical={false} />
             <XAxis
-              dataKey="month"
+              dataKey={xDataKey as string}
               tickLine={false}
               axisLine={false}
-              tickMargin={8}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tickMargin={1}
+              interval={4}
+              tickFormatter={(value) => formatDateShort(value)}
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent indicator="dot" />}
+              content={
+                <ChartTooltipContent
+                  indicator="dot"
+                  formatter={(value: number) => formatRupiah(value)}
+                />
+              }
             />
-            <Area
-              dataKey="mobile"
-              type="natural"
-              fill="var(--color-mobile)"
-              stroke="var(--color-mobile)"
-              activeDot={{
-                fill: 'var(--chart-active-dot)',
-              }}
-              stackId="a"
-            />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="var(--color-desktop)"
-              stroke="var(--color-desktop)"
-              activeDot={{
-                fill: 'var(--chart-active-dot)',
-              }}
-              stackId="a"
-            />
+            {Object.keys(config).map((key) => (
+              <Area
+                key={key}
+                dataKey={key}
+                // fillOpacity={0.35}
+                type="basisOpen"
+                fill={config[key].color}
+                stroke={config[key].color}
+                activeDot={{ fill: 'var(--chart-active-dot)' }}
+                stackId={stackId}
+              />
+            ))}
           </AreaChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter>
-        <div className="flex w-full items-start gap-2 text-sm">
-          <div className="grid gap-2">
-            <div className="flex items-center gap-2 leading-none font-medium">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-            </div>
-            <div className="flex items-center gap-2 leading-none">
-              January - June 2024
-            </div>
-          </div>
-        </div>
-      </CardFooter>
     </Card>
   )
 }

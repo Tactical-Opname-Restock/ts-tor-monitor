@@ -1,17 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { motion } from 'framer-motion'
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb'
-import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import { formatRupiah } from 'utils/helper'
+import { CircleDollarSign } from 'lucide-react'
+import { SlideUpVariant } from 'utils/animate'
 import { useDashboardQuery } from '@/hooks/query/use-dashboard-query'
-import { Card } from '@/components/ui/card'
-import ChartAreaStacked from '@/components/ui/chart-custom'
+import { DashboardChart } from '@/components/ui/chart-custom'
+import { DashboardSkeleton } from '@/components/ui/dashboard-skeleton'
+import { DashboardLayout } from '@/components/ui/shared/dashboard-layout'
+import { ProductCard } from '@/components/ui/shared/goods-product'
+import { StatCard } from '@/components/ui/shared/stats-cards'
 
 export const Route = createFileRoute('/dashboard/')({
   component: DashboardHome,
@@ -19,75 +16,89 @@ export const Route = createFileRoute('/dashboard/')({
 
 function DashboardHome() {
   const { data } = useDashboardQuery()
-  console.log(data)
-
+  const config = {
+    total_sales: { label: 'Total Sales', color: 'var(--chart-1)' },
+  }
   return (
-    <SidebarInset className="w-full h-screen flex flex-col bg-background">
-      {/* HEADER */}
-      <header className="h-14  bg-background flex items-center px-4 shrink-0">
-        <SidebarTrigger />
-        <Breadcrumb className="ml-3">
-          <BreadcrumbList>
-            <BreadcrumbItem className="hidden md:block">
-              <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator className="hidden md:block" />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Overview</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </header>
-
-      {/* MAIN */}
-      <main className="flex-1 w-full overflow-hidden p-6">
-        <div className="flex w-full h-full gap-6">
-          {/* LEFT SIDE */}
-          <div className="w-1/2 h-full flex flex-col gap-4">
-            {/* GREETING */}
-            <div>
-              <h1 className="text-3xl font-semibold">Pagi Jokowi</h1>
-              <p className="text-muted-foreground">
-                Ini List Produk Kamu Yang Paling Sedikit
-              </p>
-            </div>
-
-            {/* LIST / EMPTY DIV */}
-            <div className="flex-1 bg-[#FFFAF0] border-4 border-black shadow-[6px_6px_0_0_#000]" />
-          </div>
-
-          {/* RIGHT SIDE */}
-          <div className="w-1/2 h-full flex flex-col gap-4">
-            {/* CHART */}
-            <div className="flex-1 bg-background rounded-lg ">
-              <ChartAreaStacked />
-            </div>
-
-            {/* STATS WIDGET */}
-            <div className="grid grid-cols-2 gap-4">
-              <Widget title="Users" value={data?.stats?.users} />
-              <Widget title="Posts" value={data?.stats?.posts} />
-            </div>
-          </div>
-        </div>
-      </main>
-    </SidebarInset>
-  )
-}
-
-function Widget({ title, value }: { title: string; value?: string | number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+    <DashboardLayout
+      title="Overview"
+      description="Ini List Produk Kamu Yang Paling Sedikit"
     >
-      <Card className="bg-[#FFFAF0] border-4 border-black shadow-[6px_6px_0_0_#000] p-6 transition-all hover:translate-y-[-4px] hover:shadow-[10px_10px_0_0_#000] duration-200 cursor-pointer">
-        <div className="text-sm font-bold text-muted-foreground mb-2">
-          {title}
+      {!data ? (
+        <DashboardSkeleton />
+      ) : (
+        <div className="flex-1 flex gap-4 h-full ">
+          {/* LEFT SIDE - Product Cards */}
+          <div className="w-1/2 flex flex-col justify-between h-full overflow-hidden">
+            <div className="grid grid-cols-2 gap-3 h-full justify-between p-1">
+              {data.data.top_low_stock.length ? (
+                <>
+                  {data.data.top_low_stock.map(
+                    (product: any, index: number) => (
+                      <motion.div
+                        key={product.id}
+                        variants={SlideUpVariant}
+                        initial="initial"
+                        animate="animate"
+                        transition={{
+                          ...SlideUpVariant.transition,
+                          delay: index * 0.05,
+                        }}
+                      >
+                        <ProductCard
+                          id={product.id}
+                          name={product.name}
+                          category={product.category}
+                          price={product.price}
+                          stock_quantity={product.stock_quantity}
+                        />
+                      </motion.div>
+                    ),
+                  )}
+
+                  {Array.from({
+                    length: Math.max(0, 8 - data.data.top_low_stock.length),
+                  }).map((_, i) => (
+                    <div
+                      key={`placeholder-${i}`}
+                      className="col-span-2 bg-white-primary border-2 border-black rounded-lg shadow-[4px_4px_0_0_#000] p-4 h-[18vh] "
+                    ></div>
+                  ))}
+                </>
+              ) : (
+                <div className="col-span-full text-center text-muted-foreground py-6">
+                  Belum ada produk
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="w-1/2 flex flex-col gap-6 h-full  ">
+            <div className="grid grid-cols-2 gap-4 shrink-0 h-fit">
+              <StatCard
+                value={formatRupiah(data.data.monthly_revenue)}
+                label="Pendapatan Bulan Ini"
+                icon={<CircleDollarSign size={48} className="text-chart-1" />}
+                colorClass="text-chart-1"
+              />
+
+              <StatCard
+                value={data.data.top_selling_item.name}
+                label="Produk Paling Laris"
+                subtitle={`Terjual ${data.data.top_selling_item.total_quantity_sold} Item`}
+                icon={<CircleDollarSign size={48} className="text-chart-2" />}
+                colorClass="text-chart-2"
+              />
+            </div>
+
+            <DashboardChart
+              data={data.data.sales_chart}
+              config={config}
+              xDataKey="date"
+              description="skibidi description"
+            />
+          </div>
         </div>
-        <div className="text-4xl font-black">{value ?? '--'}</div>
-      </Card>
-    </motion.div>
+      )}
+    </DashboardLayout>
   )
 }

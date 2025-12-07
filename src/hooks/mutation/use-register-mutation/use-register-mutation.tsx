@@ -4,7 +4,7 @@ import { register } from '@/api/register/register'
 
 export const useRegisterMutation = () => {
   return useMutation({
-    mutationKey: ['login'],
+    mutationKey: ['register'],
     mutationFn: async (payload: TAuthSchema) => await register(payload),
   })
 }
